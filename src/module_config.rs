@@ -7,18 +7,17 @@ pub const MODULE_DIRECTORY: &str = "modules";
 pub const MODULE_CONFIG: &str = "ini.toml";
 
 #[derive(Deserialize, Debug)]
-enum Core {
+pub enum Core {
     Native,
-    Python,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ModuleConfig {
-    core: Core,
+    pub core: Core,
 }
 
 pub fn load_module_config(module_name: &String) -> Option<ModuleConfig> {
-    fn load_config_file(file: PathBuf) -> Result<ModuleConfig, Box<dyn Error>> {
+    fn load_config_file(file: &PathBuf) -> Result<ModuleConfig, Box<dyn Error>> {
         Ok(toml::from_str(read_to_string(&file)?.as_str())?)
     }
 
@@ -36,7 +35,7 @@ pub fn load_module_config(module_name: &String) -> Option<ModuleConfig> {
             if &name != module_name {
                 return None;
             }
-            match load_config_file(file) {
+            match load_config_file(&file) {
                 Ok(config) => Some(config),
                 Err(e) => {
                     println!("{:?}", e);
